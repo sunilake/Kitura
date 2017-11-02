@@ -510,12 +510,14 @@ extension Router {
         return (contentType == "application/json")
     }
 
-    private func httpStatusCode(from error: RequestError) -> HTTPStatusCode {
+    //TODO: TBD access
+    public func httpStatusCode(from error: RequestError) -> HTTPStatusCode {
         let status: HTTPStatusCode = HTTPStatusCode(rawValue: error.rawValue) ?? .unknown
         return status
     }
 
-    internal func join(path base: String, with component: String) -> String {
+     //TODO: TBD access
+    public func join(path base: String, with component: String) -> String {
         let strippedBase = base.hasSuffix("/") ? String(base.dropLast()) : base
         let strippedComponent = component.hasPrefix("/") ? String(component.dropFirst()) : component
         return "\(strippedBase)/\(strippedComponent)"

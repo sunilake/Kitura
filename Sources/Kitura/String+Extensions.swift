@@ -43,8 +43,6 @@ extension String {
                 result[key] = valueReplacingPlus
             }
         }
-
-        print("result: \(result)")
         return result
     }
 }

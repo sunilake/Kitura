@@ -44,6 +44,7 @@ extension String {
             }
         }
 
+        print("result: \(result)")
         return result
     }
 }

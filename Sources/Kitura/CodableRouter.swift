@@ -74,7 +74,7 @@ extension Router {
 
     ///
     public func get<O: Codable>(_ route: String, handler: @escaping SimpleCodableClosure<O>) {
-        //getSafely(route, handler: handler)
+        getSafely(route, handler: handler)
     }
     ///
 

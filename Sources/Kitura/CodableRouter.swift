@@ -19,6 +19,13 @@ import LoggerAPI
 import KituraNet
 import KituraContracts
 
+//public typealias closure1<O: Codable> = (O?, RequestError?) -> Void
+//public typealias CodableResultClosure<O: Codable> = (O?, RequestError?) -> Void
+//public typealias CodableArrayClosure<O: Codable> = (@escaping CodableArrayResultClosure<O>) -> Void
+//public typealias CodableArrayResultClosure<O: Codable> = ([O]?, RequestError?) -> Void
+//public typealias IdentifierSimpleCodableClosure<Id: Identifier, O: Codable> = (Id, @escaping CodableResultClosure<O>) -> Void
+public typealias SimpleCodableClosure<O: Codable> = (@escaping CodableResultClosure<O>) -> Void
+
 // Codable router
 
 extension Router {
@@ -64,6 +71,12 @@ extension Router {
     public func get<Id: Identifier, O: Codable>(_ route: String, handler: @escaping IdentifierSimpleCodableClosure<Id, O>) {
         getSafely(route, handler: handler)
     }
+
+    ///
+    public func get<O: Codable>(_ route: String, handler: @escaping SimpleCodableClosure<O>) {
+        //getSafely(route, handler: handler)
+    }
+    ///
 
     /**
      Setup a NonCodableClosure on the provided route which will be invoked when a request comes to the server.
@@ -384,6 +397,33 @@ extension Router {
         }
     }
 
+    /////
+    // Get
+    fileprivate func getSafely<O: Codable>(_ route: String, handler: @escaping SimpleCodableClosure<O>) {
+        get(route) { request, response, next in
+            Log.verbose("Received GET (single with no identifier) type-safe request")
+            // Define result handler
+            let resultHandler: CodableResultClosure<O> = { result, error in
+                do {
+                    if let err = error {
+                        let status = self.httpStatusCode(from: err)
+                        response.status(status)
+                    } else {
+                        let encoded = try JSONEncoder().encode(result)
+                        response.status(.OK)
+                        response.send(data: encoded)
+                    }
+                } catch {
+                    // Http 500 error
+                    response.status(.internalServerError)
+                }
+                next()
+            }
+            handler(resultHandler)
+        }
+    }
+    ////
+
     // Get
     fileprivate func getSafely<O: Codable>(_ route: String, handler: @escaping CodableArrayClosure<O>) {
         get(route) { request, response, next in
@@ -415,7 +455,7 @@ extension Router {
             return
         }
         get(join(path: route, with: ":id")) { request, response, next in
-            Log.verbose("Received GET (singular) type-safe request")
+            Log.verbose("Received GET (singular with identifier) type-safe request")
             do {
                 // Define result handler
                 let resultHandler: CodableResultClosure<O> = { result, error in

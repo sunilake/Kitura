@@ -150,7 +150,7 @@ public class RouterRequest {
 
     internal var handledNamedParameters = Set<String>()
 
-    internal var hasBodyParserBeenUsed = false
+    public var hasBodyParserBeenUsed = false
 
     /// Initializes a `RouterRequest` instance
     ///

@@ -503,7 +503,7 @@ extension Router {
         return false
     }
 
-    private func isContentTypeJson(_ request: RouterRequest) -> Bool {
+    public func isContentTypeJson(_ request: RouterRequest) -> Bool {
         guard let contentType = request.headers["Content-Type"] else {
             return false
         }
